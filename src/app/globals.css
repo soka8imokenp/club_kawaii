@@ -59,7 +59,6 @@
 
 html, body {
   overscroll-behavior: none;
-  overflow-x: clip;
 }
 
 body.lock-scroll {

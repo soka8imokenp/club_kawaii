@@ -21,10 +21,13 @@ export default function AppLayout({
         <TopBar />
       </div>
 
-      {/* Asosiy kontent */}
-      <main className="flex-1 flex flex-col w-full max-w-[1240px] mx-auto py-4 sm:py-6 px-3 sm:px-6 relative z-10">
-        {children}
-      </main>
+      {/* Asosiy kontent. Tashqi qatlam ekran kengligidagi bloklarni (bosh sahifa qahramoni) gorizontal kesadi —
+          html/body'da emas, aks holda sahifa aylantirilmay qoladi */}
+      <div className="flex-1 flex flex-col w-full overflow-x-clip">
+        <main className="flex-1 flex flex-col w-full max-w-[1240px] mx-auto py-4 sm:py-6 px-3 sm:px-6 relative z-10">
+          {children}
+        </main>
+      </div>
 
       {/* Futer */}
       <div className="site-footer w-full hidden md:block">

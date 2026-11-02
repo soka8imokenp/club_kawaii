@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, BadgeCheck, FileText, Users } from "lucide-react";
-import { categoryLabel, compact, money, type Creator } from "@/lib/club";
+import { categoryLabel, compact, type Creator } from "@/lib/club";
 import { ClubCard } from "./ClubCard";
 import { LiveBadge } from "./Tiles";
 
@@ -28,7 +28,6 @@ export function ClubHero({ creators }: { creators: Creator[] }) {
 
     const go = (d: number) => setActive((a) => (a + d + n) % n);
     const c = creators[active];
-    const top = c.tiers[c.tiers.length - 1];
 
     const onDown = (e: React.PointerEvent) => {
         start.current = { x: e.clientX, y: e.clientY, id: e.pointerId };
@@ -153,14 +152,6 @@ export function ClubHero({ creators }: { creators: Creator[] }) {
                             >
                                 Klubga kirish <ArrowRight className="w-4 h-4" />
                             </Link>
-                            <span className="text-xs font-mono text-white/60 leading-tight">
-                                kartalar
-                                <br />
-                                <b className="text-white">
-                                    {money(c.tiers[0].price)}–{money(top.price)}
-                                </b>{" "}
-                                so&apos;m
-                            </span>
                         </div>
                     </div>
                 </div>
