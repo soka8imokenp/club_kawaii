@@ -1,0 +1,257 @@
+@import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Mochiy+Pop+One&family=Fredoka:wght@600;700&family=Dela+Gothic+One&family=Outfit:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=VT323&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-cyber: 'Syncopate', sans-serif;
+  --font-sans: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --font-display: 'Dela Gothic One', sans-serif;
+  --font-pop: 'Mochiy Pop One', sans-serif;
+  --font-vcr: 'VT323', monospace;
+  
+  /* Map Tailwind v4 color tokens to non-conflicting CSS variables to avoid circular lookups */
+  --color-background: var(--background-color);
+  --color-foreground: var(--foreground-color);
+  --color-primary: var(--primary-color);
+  
+  --color-card-bg: var(--card-bg-color);
+  --color-page-bg: var(--page-bg-color);
+  --color-card-border: var(--card-border-color);
+  --color-text-main: var(--text-main-color);
+  --color-text-muted: var(--text-muted-color);
+  --color-border-sep: var(--border-sep-color);
+}
+
+:root {
+  --background-color: #ffffff;
+  --foreground-color: #000000;
+  --primary-color: #8a60c2;
+  
+  --page-bg-color: #e9ebf0;
+  --card-bg-color: #ffffff;
+  --card-border-color: #ffffff;
+  --text-main-color: #2c3246;
+  --text-muted-color: #8493a8;
+  --border-sep-color: rgba(0, 0, 0, 0.06);
+  
+  color-scheme: light;
+}
+
+.dark {
+  --background-color: #000000;
+  --foreground-color: #ffffff;
+  --primary-color: #8a60c2;
+  
+  --page-bg-color: #000000;
+  --card-bg-color: #0a0a0a;
+  --card-border-color: #1e1d22;
+  --text-main-color: #e1e7f0;
+  --text-muted-color: #6d7f95;
+  --border-sep-color: rgba(255, 255, 255, 0.04);
+  
+  --grid-color: rgba(139, 96, 194, 0.05);
+  --grid-color-bright: rgba(139, 96, 194, 0.2);
+  
+  color-scheme: dark;
+}
+
+html, body {
+  overscroll-behavior: none;
+}
+
+body.lock-scroll {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  background-color: var(--page-bg-color);
+  color: var(--text-main-color);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overflow-y: auto;
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.card-shadow {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04), 
+              0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.dark .card-shadow {
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 
+              0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* Interactive Cyber Panel Card - stable without translateY */
+.interactive-panel {
+  position: relative;
+  transition: border-color 0.25s ease, 
+              box-shadow 0.25s ease;
+}
+
+.interactive-panel:hover {
+  border-color: rgba(138, 96, 194, 0.45);
+  box-shadow: 0 10px 30px -5px rgba(138, 96, 194, 0.12),
+              0 0 0 1px rgba(138, 96, 194, 0.12);
+}
+
+.dark .interactive-panel:hover {
+  box-shadow: 0 20px 45px -10px rgba(138, 96, 194, 0.35),
+              0 0 0 1px rgba(138, 96, 194, 0.25);
+}
+
+/* Minimalist Button Hover Light Sweep */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shine::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 40%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.25),
+    transparent
+  );
+  transform: rotate(25deg);
+  transition: transform 0.65s cubic-bezier(0.19, 1, 0.22, 1);
+  pointer-events: none;
+}
+
+.btn-shine:hover::after {
+  transform: translate(380%, 0) rotate(25deg);
+}
+
+/* Sound Wave Equalizer Bars */
+@keyframes wave-bounce {
+  0%, 100% { height: 4px; }
+  50% { height: 16px; }
+}
+
+.wave-bar {
+  animation: wave-bounce 1s ease-in-out infinite;
+}
+
+/* Custom scroll bar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Hide default scrollbar */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+}
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+.grid-bg {
+    background-color: var(--background-color);
+    background-image: 
+        linear-gradient(to right, rgba(139, 96, 194, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(139, 96, 194, 0.05) 1px, transparent 1px);
+    background-size: 160px 160px;
+    transition: background-color 0.3s ease;
+}
+
+.grid-bg-bright {
+    background-image: 
+        linear-gradient(to right, rgba(139, 96, 194, 0.2) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(139, 96, 194, 0.2) 1px, transparent 1px);
+    background-size: 160px 160px;
+}
+
+/* Smooth transition for theme toggles */
+.theme-transition {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Pastdan chiqadigan panellar (mobil menyu va h.k.) */
+.sheet-up {
+  animation: sheet-up 0.42s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.sheet-fade {
+  animation: sheet-fade 0.3s ease both;
+}
+
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+}
+
+@keyframes sheet-fade {
+  from { opacity: 0; }
+}
+
+/* O'ngdan chiqadigan yon panel */
+.sheet-left {
+  animation: sheet-left 0.38s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes sheet-left {
+  from { transform: translateX(100%); }
+}
+
+/* Katta ekrandagi markaziy oyna — yumshoq paydo bo'lish */
+.sheet-pop {
+  animation: sheet-pop 0.26s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes sheet-pop {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+}
+
+/* ---------------- Kawaii saytlari paneli ---------------- */
+/* Yuqoridan "sakrab" tushadi */
+.sites-drop {
+  animation: sites-drop 0.55s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+@keyframes sites-drop {
+  from { transform: translateY(-110%); }
+}
+/* Plitkalar navbat bilan paydo bo'ladi */
+.sites-tile {
+  animation: sites-tile 0.45s cubic-bezier(0.34, 1.3, 0.64, 1) both;
+}
+@keyframes sites-tile {
+  from { opacity: 0; transform: translateY(-10px) scale(0.94); }
+}
+/* Quyon quloqlarini qimirlatadi */
+.sites-bunny {
+  animation: sites-bunny 0.9s 0.35s ease-in-out both;
+  transform-origin: 50% 90%;
+}
+@keyframes sites-bunny {
+  0%, 100% { transform: rotate(0); }
+  20% { transform: rotate(-12deg); }
+  40% { transform: rotate(10deg); }
+  60% { transform: rotate(-6deg); }
+  80% { transform: rotate(3deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sites-drop, .sites-tile, .sites-bunny { animation: none; }
+}
+

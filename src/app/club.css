@@ -1,0 +1,275 @@
+/* ================= Klub kartasi ================= */
+.club-card-wrap {
+  --rx: 0deg;
+  --ry: 0deg;
+  --mx: 50%;
+  --my: 50%;
+  --on: 0;
+  perspective: 900px;
+  container-type: inline-size;
+}
+
+.club-card {
+  position: relative;
+  aspect-ratio: 1.586;
+  border-radius: 4.5cqw;
+  overflow: hidden;
+  color: #fff;
+  isolation: isolate;
+  transform: rotateX(var(--rx)) rotateY(var(--ry));
+  transition: transform 0.6s cubic-bezier(0.2, 0.9, 0.3, 1), box-shadow 0.3s ease;
+  background: linear-gradient(135deg, oklch(0.46 0.15 var(--h)), oklch(0.17 0.05 var(--h)) 75%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.22),
+    0 18px 40px -20px oklch(0.35 0.16 var(--h) / 0.8);
+  user-select: none;
+}
+.club-card-wrap:hover .club-card {
+  transition-duration: 0.12s, 0.3s;
+}
+
+.club-card__art {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 66%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.7;
+  mask-image: linear-gradient(to left, #000 35%, transparent);
+  -webkit-mask-image: linear-gradient(to left, #000 35%, transparent);
+  z-index: -1;
+}
+.club-card__shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(100deg, oklch(0.2 0.08 var(--h) / 0.92) 28%, oklch(0.2 0.08 var(--h) / 0.25) 70%, transparent),
+    linear-gradient(to top, oklch(0.12 0.05 var(--h) / 0.65), transparent 45%);
+  z-index: -1;
+}
+
+/* Golografik qatlam: kursor bo'yicha siljiydi */
+.club-card__foil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 22%,
+    oklch(0.88 0.16 calc(var(--h) + 70) / 0.55) 36%,
+    oklch(0.92 0.12 calc(var(--h) - 60) / 0.5) 45%,
+    oklch(0.88 0.16 calc(var(--h) + 180) / 0.45) 54%,
+    transparent 68%
+  );
+  background-size: 260% 260%;
+  background-position: var(--mx) var(--my);
+  mix-blend-mode: color-dodge;
+  opacity: calc(0.12 + var(--on) * 0.5);
+  transition: opacity 0.4s ease;
+}
+.club-card--l0 .club-card__foil {
+  opacity: calc(var(--on) * 0.25);
+}
+.club-card--l2 .club-card__foil {
+  opacity: calc(0.3 + var(--on) * 0.5);
+}
+.club-card-wrap:not(:hover) .club-card--l2 .club-card__foil {
+  animation: foil-drift 7s ease-in-out infinite;
+}
+@keyframes foil-drift {
+  0%, 100% { background-position: 10% 20%; }
+  50% { background-position: 90% 80%; }
+}
+.club-card--l2 {
+  box-shadow:
+    inset 0 0 0 0.5cqw oklch(0.88 0.1 85 / 0.55),
+    inset 0 1px 0 rgb(255 255 255 / 0.3),
+    0 18px 40px -20px oklch(0.35 0.16 var(--h) / 0.8);
+}
+
+.club-card__glare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--mx) var(--my), rgb(255 255 255 / 0.4), transparent 45%);
+  mix-blend-mode: overlay;
+  opacity: var(--on);
+  transition: opacity 0.4s ease;
+}
+
+.club-card__body {
+  position: absolute;
+  inset: 0;
+  padding: 6cqw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.club-card__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.6cqw;
+  font-family: var(--font-mono);
+  font-size: 3.3cqw;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  opacity: 0.85;
+}
+.club-card__bunny {
+  width: 4cqw;
+  height: 4.6cqw;
+}
+.club-card__tier {
+  padding: 0.8cqw 2.6cqw;
+  border-radius: 99px;
+  font-size: 3.4cqw;
+  font-weight: 800;
+  background: rgb(255 255 255 / 0.16);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgb(255 255 255 / 0.22);
+  white-space: nowrap;
+}
+.club-card__avatar {
+  width: 13cqw;
+  height: 13cqw;
+  border-radius: 3cqw;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 0.6cqw rgb(255 255 255 / 0.25);
+}
+.club-card__name {
+  font-size: 6cqw;
+  font-weight: 900;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.club-card__meta {
+  font-family: var(--font-mono);
+  font-size: 3.2cqw;
+  opacity: 0.7;
+}
+.club-card__number {
+  font-family: var(--font-mono);
+  font-size: 4.4cqw;
+  letter-spacing: 0.12em;
+  opacity: 0.9;
+}
+.club-card__price {
+  font-size: 4.6cqw;
+  font-weight: 800;
+}
+.club-card__price small {
+  font-size: 2.8cqw;
+  font-weight: 600;
+  opacity: 0.7;
+}
+.club-card__pips {
+  position: absolute;
+  right: 6cqw;
+  top: 50%;
+  translate: 0 -50%;
+  display: flex;
+  flex-direction: column;
+  gap: 1cqw;
+}
+.club-card__pips i {
+  display: block;
+  width: 1cqw;
+  height: 3.2cqw;
+  border-radius: 1cqw;
+  background: rgb(255 255 255 / 0.2);
+}
+.club-card__pips i[data-on] {
+  background: rgb(255 255 255 / 0.9);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .club-card { transform: none; }
+  .club-card__foil { animation: none !important; }
+}
+
+/* ================= Bosh sahifadagi karta to'plami ================= */
+.club-deck {
+  position: relative;
+  touch-action: pan-y;
+}
+.club-deck__slot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--deck-w);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease, filter 0.4s ease;
+  will-change: transform;
+}
+.club-deck__slot[data-dragging] {
+  transition: none;
+}
+
+/* ================= Jonli efir belgisi ================= */
+.live-dot {
+  position: relative;
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 99px;
+  background: #ff3b5c;
+}
+.live-dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: inherit;
+  animation: live-ping 1.6s ease-out infinite;
+}
+@keyframes live-ping {
+  to { transform: scale(2.6); opacity: 0; }
+}
+
+/* Lentadagi "hikoyalar" halqasi — jonli efirda qizil, yangi postda binafsha */
+.story-ring {
+  padding: 2px;
+  border-radius: 18px;
+  background: conic-gradient(from 200deg, var(--color-primary), oklch(0.75 0.15 340), var(--color-primary));
+}
+.story-ring[data-live] {
+  background: conic-gradient(from 200deg, #ff3b5c, #ff8a5c, #ff3b5c);
+}
+
+/* ================= Danmaku (efirdagi uchib o'tuvchi xabarlar) ================= */
+.danmaku-line {
+  position: absolute;
+  left: 100%;
+  white-space: nowrap;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.9), 0 0 6px rgb(0 0 0 / 0.5);
+  animation: danmaku-fly var(--dur, 8s) linear forwards;
+  pointer-events: none;
+}
+@keyframes danmaku-fly {
+  to { transform: translateX(calc(-1 * var(--w, 100vw) - 100%)); }
+}
+
+/* A'zolik "chiqarilishi" — karta aylanib keladi */
+.card-mint {
+  animation: card-mint 1s cubic-bezier(0.2, 0.9, 0.25, 1.15) both;
+}
+@keyframes card-mint {
+  0% { transform: perspective(900px) rotateY(-180deg) scale(0.7); opacity: 0; }
+  60% { opacity: 1; }
+  100% { transform: perspective(900px) rotateY(0) scale(1); }
+}
+
+/* Kartadagi sahifa sarlavhasi uchun yumshoq paydo bo'lish */
+.rise {
+  animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rise, .card-mint { animation: none; }
+}
