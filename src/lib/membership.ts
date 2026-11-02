@@ -17,11 +17,8 @@ export interface Membership {
 
 const KEY = "club.memberships";
 const DAY = 86_400_000;
-// Namunaviy a'zoliklar — lenta bo'sh bo'lmasin
-const SEED: Membership[] = [
-    { creatorId: "soka", tierId: "sempai", number: 1287, since: Date.UTC(2025, 2, 14), months: 3 },
-    { creatorId: "madina", tierId: "kouhai", number: 642, since: Date.UTC(2025, 7, 2), months: 1 },
-];
+// Yangi foydalanuvchida a'zolik yo'q — lenta barcha ijodkorlarning postlarini ko'rsatadi
+const SEED: Membership[] = [];
 
 let cache: Membership[] | null = null;
 const listeners = new Set<() => void>();
@@ -69,6 +66,8 @@ export function join(creatorId: string, tierId: string, months: number): Members
         ? { ...prev, tierId, months }
         : { creatorId, tierId, months, since: Date.now(), number: c.tiers.reduce((s, t) => s + t.members, 0) + 1 + (tier.members % 7) };
     write([...list.filter((x) => x.creatorId !== creatorId), m]);
+    // Birinchi a'zolikdan keyin lenta "Obunalarim"dan ochiladi
+    if (list.length === 0) setFeedTab("mine");
     return m;
 }
 
@@ -110,3 +109,41 @@ export const formatDate = (d: Date | number) => {
 export const memberNo = (n: number) => `# ${String(n).padStart(4, "0")}`;
 
 export const myCreators = (list: Membership[]) => list.map((m) => CREATORS.find((c) => c.id === m.creatorId)!).filter(Boolean);
+
+/* ---- Lentadagi tanlangan bo'lim (eslab qolinadi) ---- */
+export type FeedTab = "all" | "mine";
+const TAB_KEY = "club.feedTab";
+let tabCache: FeedTab | null | undefined;
+const tabListeners = new Set<() => void>();
+
+function readTab(): FeedTab | null {
+    if (tabCache !== undefined) return tabCache;
+    try {
+        const v = localStorage.getItem(TAB_KEY);
+        tabCache = v === "all" || v === "mine" ? v : null;
+    } catch {
+        tabCache = null;
+    }
+    return tabCache;
+}
+
+export function setFeedTab(tab: FeedTab) {
+    tabCache = tab;
+    try {
+        localStorage.setItem(TAB_KEY, tab);
+    } catch {
+        // xotira yopiq
+    }
+    tabListeners.forEach((l) => l());
+}
+
+/** Tanlangan bo'lim; hali tanlanmagan bo'lsa — obunalar bor bo'lsa "mine", yo'q bo'lsa "all" */
+export function useFeedTab(): [FeedTab, (t: FeedTab) => void] {
+    const list = useMemberships();
+    const stored = useSyncExternalStore(
+        (cb) => (tabListeners.add(cb), () => tabListeners.delete(cb)),
+        readTab,
+        () => null,
+    );
+    return [stored ?? (list.length > 0 ? "mine" : "all"), setFeedTab];
+}

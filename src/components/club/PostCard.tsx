@@ -171,7 +171,7 @@ function PostMedia({ post, open }: { post: Post; open: boolean }) {
                 {/* Soxta to'lqin shakli */}
                 <div className="flex-1 flex items-center gap-[3px] h-8" aria-hidden>
                     {Array.from({ length: 36 }, (_, i) => (
-                        <span key={i} className="flex-1 rounded-full bg-primary/40" style={{ height: `${25 + Math.abs(Math.sin(i * 1.7 + post.likes)) * 75}%` }} />
+                        <span key={i} className="flex-1 rounded-full bg-primary/40" style={{ height: `${Math.round(25 + Math.abs(Math.sin(i * 1.7 + post.likes)) * 75)}%` }} />
                     ))}
                 </div>
                 <span className="text-xs font-mono text-text-muted inline-flex items-center gap-1">

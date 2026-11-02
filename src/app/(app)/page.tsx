@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { CATEGORIES, CREATORS } from "@/lib/club";
-import { ClubDeck } from "@/components/club/ClubDeck";
+import { ClubHero } from "@/components/club/ClubHero";
 import { CreatorTile, LiveTile, SectionHead, panel } from "@/components/club/Tiles";
 
 export const metadata: Metadata = {
@@ -16,15 +16,8 @@ export default function HomePage() {
 
     return (
         <div className="space-y-10 sm:space-y-14 pb-10">
-            {/* Qahramon: klub kartalari to'plami */}
-            <section className="pt-2 lg:pt-8 lg:min-h-[calc(100svh-64px-3rem)] lg:flex lg:items-center -mx-3 px-3 sm:mx-0 sm:px-0 overflow-x-clip">
-                <div className="w-full">
-                    <h1 className="lg:hidden mb-4 text-2xl font-black text-text-main leading-tight">
-                        Sevimli ijodkoringning klubiga qo&apos;shil
-                    </h1>
-                    <ClubDeck creators={featured} />
-                </div>
-            </section>
+            {/* Qahramon: qahramon tanlash ekrani uslubida klub kartalari */}
+            <ClubHero creators={featured} />
 
             {/* Jonli efirlar */}
             {live.length > 0 && (
