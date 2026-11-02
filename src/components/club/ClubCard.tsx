@@ -2,8 +2,9 @@
 
 import { useRef } from "react";
 import type { Creator, Tier } from "@/lib/club";
-import { memberNo, type Membership } from "@/lib/membership";
+import { memberNo, tenureOf, type Membership } from "@/lib/membership";
 import { money } from "@/lib/club";
+import { useNow } from "@/lib/store";
 
 /** Kursor bo'yicha 3D egilish va golografik yaltirash (CSS o'zgaruvchilari orqali, re-render'siz) */
 export function useTilt<T extends HTMLElement>(max = 12) {
@@ -57,10 +58,13 @@ interface ClubCardProps {
 export function ClubCard({ creator, tier, member, tilt = true, className = "" }: ClubCardProps) {
     const { ref, onPointerMove, onPointerLeave } = useTilt<HTMLDivElement>();
     const level = creator.tiers.findIndex((x) => x.id === tier.id);
+    // Staj darajasi: 3 oy — bronza, 6 — gologramma, 12 — oltin
+    const tenure = member ? tenureOf(member) : null;
+    const now = useNow();
 
     return (
         <div ref={ref} onPointerMove={tilt ? onPointerMove : undefined} onPointerLeave={tilt ? onPointerLeave : undefined} className={`club-card-wrap ${className}`} style={{ "--h": creator.hue } as React.CSSProperties}>
-            <div className={`club-card club-card--l${level}`}>
+            <div className={`club-card club-card--l${level} ${tenure?.level ? `club-card--${tenure.level.id}` : ""}`}>
                 {/* Ijodkor banneri — kartaning teksturasi */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={creator.banner} alt="" className="club-card__art" draggable={false} />
@@ -82,7 +86,9 @@ export function ClubCard({ creator, tier, member, tilt = true, className = "" }:
                         <img src={creator.avatar} alt="" className="club-card__avatar" draggable={false} />
                         <div className="min-w-0">
                             <div className="club-card__name">{creator.name}</div>
-                            <div className="club-card__meta">{member ? "Klub a'zosi" : `${tier.perks.length} imtiyoz`}</div>
+                            <div className="club-card__meta">
+                                {member ? (tenure?.level ? `${tenure.level.label} · ${tenure.months} oy` : member.trialUntil && member.trialUntil > now ? "Sinov muddati" : "Klub a'zosi") : `${tier.perks.length} imtiyoz`}
+                            </div>
                         </div>
                     </div>
 

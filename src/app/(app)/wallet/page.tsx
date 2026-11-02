@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, CalendarDays, Check, CreditCard, WalletCards } from "lucide-react";
-import { creatorById, money } from "@/lib/club";
-import { formatDate, leave, memberNo, nextCharge, useMemberships } from "@/lib/membership";
+import { ArrowRight, CalendarDays, Check, CreditCard, Share2, WalletCards } from "lucide-react";
+import { money } from "@/lib/club";
+import { findCreator as creatorById } from "@/lib/studio";
+import { TENURE, formatDate, leave, memberNo, nextCharge, tenureOf, useMemberships } from "@/lib/membership";
+import { shareCard } from "@/lib/shareCard";
+import { useNow } from "@/lib/store";
 import { ClubCard } from "@/components/club/ClubCard";
 import { openJoin } from "@/components/club/JoinSheet";
 import { panel } from "@/components/club/Tiles";
@@ -12,6 +15,7 @@ import { panel } from "@/components/club/Tiles";
 /** Klub kartalarim — hamyon: kartalar ustma-ust, bosilgani ochiladi */
 export default function WalletPage() {
     const list = useMemberships();
+    const now = useNow();
     const [selected, setSelected] = useState<string | null>(null);
     const [confirm, setConfirm] = useState(false);
     const activeId = list.some((m) => m.creatorId === selected) ? selected : list[0]?.creatorId;
@@ -98,6 +102,15 @@ export default function WalletPage() {
                             <Info label="Oylik" value={`${money(tier.price)} so'm`} Icon={WalletCards} />
                         </dl>
 
+                        {m.trialUntil && m.trialUntil > now && (
+                            <p className="mt-4 px-3 py-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold">
+                                Sinov muddati {formatDate(m.trialUntil)} gacha
+                            </p>
+                        )}
+
+                        {/* Karta darajasi stajga qarab o'sadi */}
+                        <Tenure months={tenureOf(m).months} />
+
                         <p className="mt-6 mb-2 text-[11px] font-mono font-bold uppercase tracking-wider text-text-muted">Imtiyozlar</p>
                         <ul className="space-y-2">
                             {tier.perks.map((p) => (
@@ -115,6 +128,13 @@ export default function WalletPage() {
                                 className="px-5 py-3 rounded-xl bg-primary hover:bg-primary/90 text-white text-sm font-bold cursor-pointer active:scale-[0.98] transition-all"
                             >
                                 Tarifni o&apos;zgartirish
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => shareCard(c, tier, m)}
+                                className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl border border-border-sep text-sm font-bold text-text-main hover:border-primary/40 cursor-pointer transition-colors"
+                            >
+                                <Share2 className="w-4 h-4" /> Kartani ulashish
                             </button>
                             {confirm ? (
                                 <div className="flex gap-2">
@@ -156,6 +176,29 @@ function Info({ label, value, Icon }: { label: string; value: string; Icon: type
                 <Icon className="w-3.5 h-3.5" /> {label}
             </dt>
             <dd className="mt-1 text-sm font-bold text-text-main">{value}</dd>
+        </div>
+    );
+}
+
+function Tenure({ months }: { months: number }) {
+    return (
+        <div className="mt-6">
+            <p className="mb-2 text-[11px] font-mono font-bold uppercase tracking-wider text-text-muted">Karta darajasi · {months} oy</p>
+            <div className="grid grid-cols-3 gap-2">
+                {TENURE.map((t) => {
+                    const done = months >= t.months;
+                    const pct = Math.min(100, Math.round((months / t.months) * 100));
+                    return (
+                        <div key={t.id} className={`p-3 rounded-xl ${done ? "bg-primary/10" : "bg-foreground/[0.04]"}`}>
+                            <p className={`text-xs font-black ${done ? "text-primary" : "text-text-main"}`}>{t.label}</p>
+                            <p className="text-[10px] font-mono text-text-muted">{t.months} oy</p>
+                            <div className="mt-2 h-1 rounded-full bg-foreground/10 overflow-hidden">
+                                <div className="h-full bg-primary" style={{ width: `${pct}%` }} />
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
         </div>
     );
 }

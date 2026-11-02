@@ -18,8 +18,8 @@ export default function BottomNav() {
     // Logotipni bosib turish — kawaii saytlari paneli
     const logoPress = useLongPress(openSites);
 
-    // Efir sahifasida pastda chat kiritish paneli turadi — navigatsiya yashiriladi
-    if (/^\/[^/]+\/live$/.test(pathname)) return null;
+    // Efir va klub chati sahifalarida pastda kiritish paneli turadi — navigatsiya yashiriladi
+    if (/^\/[^/]+\/(live|chat)$/.test(pathname)) return null;
     const tone = (active: boolean) => (active ? "text-primary" : "text-text-muted hover:text-text-main");
 
     return (

@@ -1,0 +1,8 @@
+import type { Metadata } from "next";
+import { StudioShell } from "@/components/studio/StudioShell";
+
+export const metadata: Metadata = { title: "Studiya • Kawaii Club" };
+
+export default function StudioLayout({ children }: { children: React.ReactNode }) {
+    return <StudioShell>{children}</StudioShell>;
+}

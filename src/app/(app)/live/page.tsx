@@ -1,15 +1,14 @@
-import type { Metadata } from "next";
+"use client";
+
 import Link from "next/link";
 import { CalendarClock } from "lucide-react";
-import { CREATORS, POSTS, creatorById } from "@/lib/club";
+import { useCreators, usePosts } from "@/lib/studio";
 import { LiveTile, SectionHead, panel } from "@/components/club/Tiles";
 
-export const metadata: Metadata = {
-    title: "Efirlar • Kawaii Club",
-    description: "Ijodkorlarning jonli efirlari: hamma uchun va klub a'zolari uchun.",
-};
-
 export default function LivePage() {
+    const CREATORS = useCreators();
+    const POSTS = usePosts();
+    const creatorById = (id: string) => CREATORS.find((c) => c.id === id);
     const live = CREATORS.filter((c) => c.live).sort((a, b) => b.live!.viewers - a.live!.viewers);
     const soon = POSTS.filter((p) => p.event);
 

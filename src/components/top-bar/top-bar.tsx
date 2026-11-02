@@ -8,7 +8,10 @@ import { useThemeHook } from "./_hooks/top-bar-hooks";
 import { useLongPress } from "@/hooks/useLongPress";
 import { openSites } from "@/components/sites/SitesPanel";
 import { usePathname } from "next/navigation";
-import { Bell, Compass, Moon, Newspaper, Radio, Sun, WalletCards } from "lucide-react";
+import { Bell, Compass, Moon, Newspaper, Radio, Search, Sun, WalletCards } from "lucide-react";
+import { useAccount } from "@/lib/account";
+import { openNotices, useUnread } from "@/components/club/NotificationsSheet";
+import { openLogin } from "@/components/club/sheets";
 
 const NAV = [
     { href: "/feed", label: "Lenta", Icon: Newspaper },
@@ -20,6 +23,8 @@ const NAV = [
 export default function TopBar() {
     const { theme, toggleTheme } = useThemeHook();
     const pathname = usePathname();
+    const account = useAccount();
+    const unread = useUnread();
     const [isFlipped, setIsFlipped] = useState(false);
     // Logotipni bosib turish — kawaii saytlari paneli
     const logoPress = useLongPress(openSites);
@@ -120,25 +125,28 @@ export default function TopBar() {
                         )}
                     </button>
 
-                    {/* Уведомления */}
-                    <button className="flex items-center justify-center w-8 h-8 rounded-sm transition-all duration-200 cursor-pointer text-text-main hover:bg-foreground/5 active:scale-95">
+                    {/* Qidiruv */}
+                    <Link href="/search" aria-label="Qidiruv" className="flex items-center justify-center w-8 h-8 rounded-sm transition-all duration-200 cursor-pointer text-text-main hover:bg-foreground/5 active:scale-95">
+                        <Search className="w-4 h-4" />
+                    </Link>
+
+                    {/* Bildirishnomalar */}
+                    <button type="button" onClick={openNotices} aria-label="Bildirishnomalar" className="relative flex items-center justify-center w-8 h-8 rounded-sm transition-all duration-200 cursor-pointer text-text-main hover:bg-foreground/5 active:scale-95">
                         <Bell className="w-4 h-4 text-text-main" />
+                        {unread > 0 && <span className="absolute top-0.5 right-0.5 min-w-4 h-4 px-1 rounded-full bg-primary text-white text-[9px] font-bold flex items-center justify-center">{unread}</span>}
                     </button>
 
-                    {/* Аватар пользователя */}
-                    <button className="flex shrink-0 h-9 w-9 rounded-sm border border-border-sep bg-foreground/5 transform-gpu will-change-transform cursor-pointer transition-transform overflow-hidden duration-200 active:scale-95">
-                        <div className="relative w-full h-full">
-                            <Image
-                                className="object-cover"
-                                src="https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=120&auto=format&fit=crop"
-                                alt="Profile image"
-                                draggable={false}
-                                fill
-                                unoptimized
-                                priority
-                            />
-                        </div>
-                    </button>
+                    {/* Profil yoki kirish */}
+                    {account ? (
+                        <Link href="/me" aria-label="Profil" className="flex shrink-0 h-9 w-9 rounded-sm border border-border-sep bg-primary/15 p-1.5 overflow-hidden active:scale-95 transition-transform">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={account.avatar} alt="" className="w-full h-full object-contain" />
+                        </Link>
+                    ) : (
+                        <button type="button" onClick={openLogin} className="h-9 px-3.5 rounded-sm bg-primary hover:bg-primary/90 text-white text-xs font-mono font-bold uppercase tracking-wider cursor-pointer active:scale-95 transition-all">
+                            Kirish
+                        </button>
+                    )}
                 </div>
             </div>
         </nav>

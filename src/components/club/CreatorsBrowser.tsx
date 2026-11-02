@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
-import { CATEGORIES, CREATORS, type CategoryId } from "@/lib/club";
+import { CATEGORIES, type CategoryId } from "@/lib/club";
+import { useCreators } from "@/lib/studio";
 import { CreatorTile } from "./Tiles";
 
 const SORTS = [
@@ -18,6 +19,7 @@ export function CreatorsBrowser() {
     const router = useRouter();
     const pathname = usePathname();
     const cat = (params.get("c") as CategoryId | null) ?? null;
+    const CREATORS = useCreators();
     const [q, setQ] = useState("");
     const [sort, setSort] = useState<(typeof SORTS)[number]["id"]>("top");
 

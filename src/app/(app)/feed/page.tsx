@@ -3,7 +3,8 @@
 import { Fragment, useState } from "react";
 import Link from "next/link";
 import { Eye, WalletCards } from "lucide-react";
-import { CREATORS, POSTS, categoryLabel, compact, creatorById, money, type Creator, type PostKind } from "@/lib/club";
+import { categoryLabel, compact, money, type Creator, type PostKind } from "@/lib/club";
+import { useCreators, useMyClub, usePosts } from "@/lib/studio";
 import { useFeedTab, useMemberships } from "@/lib/membership";
 import { PostCard } from "@/components/club/PostCard";
 import { openJoin } from "@/components/club/JoinSheet";
@@ -27,6 +28,10 @@ const KINDS: { id: PostKind | "all"; label: string }[] = [
 
 export default function FeedPage() {
     const memberships = useMemberships();
+    const CREATORS = useCreators();
+    const POSTS = usePosts();
+    const myClub = useMyClub();
+    const creatorById = (id: string) => CREATORS.find((c) => c.id === id);
     const mine = memberships.map((m) => ({ m, c: creatorById(m.creatorId)! })).filter((x) => x.c);
     const mineIds = new Set(mine.map((x) => x.c.id));
     const [tab, setTab] = useFeedTab();
@@ -38,7 +43,7 @@ export default function FeedPage() {
         .sort((a, b) => a.agoMin - b.agoMin);
 
     const live = CREATORS.filter((c) => c.live);
-    const suggest = CREATORS.filter((c) => !mineIds.has(c.id));
+    const suggest = CREATORS.filter((c) => !mineIds.has(c.id) && c.id !== myClub?.id);
 
     return (
         <div className="lg:grid lg:grid-cols-[250px_minmax(0,1fr)_300px] gap-6 items-start pb-10">

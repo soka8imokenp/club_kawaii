@@ -4,6 +4,10 @@ import FooterBar from "@/components/footer-bar/footer-bar";
 import BottomNav from "@/components/bottom-nav/bottom-nav";
 import { SitesPanel } from "@/components/sites/SitesPanel";
 import { JoinSheet } from "@/components/club/JoinSheet";
+import { DonateSheet } from "@/components/club/DonateSheet";
+import { NotificationsSheet } from "@/components/club/NotificationsSheet";
+import { LoginSheet, PaySheet } from "@/components/club/sheets";
+import { Lightbox } from "@/components/club/media";
 
 export default function AppLayout({
   children,
@@ -39,6 +43,11 @@ export default function AppLayout({
 
       {/* Klubga a'zo bo'lish oynasi — istalgan sahifadan openJoin() bilan */}
       <JoinSheet />
+      <PaySheet />
+      <DonateSheet />
+      <LoginSheet />
+      <NotificationsSheet />
+      <Lightbox />
 
       {/* Kawaii saytlari — logotipni bosib turganda yuqoridan tushadi */}
       <SitesPanel />

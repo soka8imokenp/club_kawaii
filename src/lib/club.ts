@@ -26,14 +26,39 @@ export interface Tier {
     limit?: number;
 }
 
+/** Efirga kirish: bepul, klub a'zolari uchun yoki chipta bilan */
+export type StreamAccess = "free" | "members" | "ticket";
+export type ChatMode = "all" | "members" | "slow";
+
 export interface LiveStream {
     title: string;
     viewers: number;
     /** Necha daqiqa oldin boshlangan */
     startedMin: number;
-    /** Faqat shu tarif (va undan yuqori) a'zolari uchun; null — hamma uchun */
+    access: StreamAccess;
+    /** members — kerakli tarif; ticket — shu tarif va yuqorisiga bepul (null — hamma chipta oladi) */
     tier: string | null;
+    /** Chipta narxi (so'm) */
+    price?: number;
+    /** Efir yozuvi saqlanadimi */
+    record: boolean;
+    /** Yozuvni kim ko'radi: efir bilan bir xil yoki hamma */
+    recordAccess?: "same" | "public";
+    chat: ChatMode;
+    donations: boolean;
+    danmaku: boolean;
     cover: string;
+    /** Studiyadan boshlangan efir (ms) */
+    startedAt?: number;
+}
+
+export interface Product {
+    id: string;
+    title: string;
+    kind: "digital" | "physical";
+    price: number;
+    image: string;
+    desc: string;
 }
 
 export interface Creator {
@@ -52,6 +77,9 @@ export interface Creator {
     tiers: Tier[];
     live?: LiveStream;
     goal?: { title: string; current: number; target: number };
+    /** Sinov muddati: N kun arzon narxda */
+    trial?: { days: number; price: number };
+    products?: Product[];
 }
 
 export type PostKind = "image" | "video" | "audio" | "text" | "poll" | "event";
@@ -74,6 +102,18 @@ export interface Post {
     tags?: string[];
     poll?: { options: { label: string; votes: number }[] };
     event?: { when: string; title: string };
+    /** Erta kirish: shuncha daqiqadan keyin hamma uchun ochiladi */
+    publicAfterMin?: number;
+    /** Alohida sotib olish narxi (obunasiz) */
+    price?: number;
+    /** Efir yozuvi */
+    vod?: boolean;
+    /** Studiyada yaratilgan post: haqiqiy vaqt (ms) */
+    at?: number;
+    /** Rejalashtirilgan chiqish vaqti (ms) */
+    publishAt?: number;
+    /** Qo'shimcha rasmlar (galereya) */
+    gallery?: string[];
 }
 
 const TIERS = (names: [string, string, string], prices: [number, number, number], perks: [string[], string[], string[]], members: [number, number, number], limit?: number): Tier[] =>
@@ -110,8 +150,13 @@ export const CREATORS: Creator[] = [
             [2100, 2240, 510],
             600,
         ),
-        live: { title: "Gullar ichidagi qiz — 6-qism dublyaji, jonli", viewers: 142, startedMin: 38, tier: null, cover: img("mascot") },
+        live: { title: "Gullar ichidagi qiz — 6-qism dublyaji, jonli", viewers: 142, startedMin: 38, access: "free", tier: null, record: true, recordAccess: "public", chat: "all", donations: true, danmaku: true, cover: img("mascot") },
+        trial: { days: 7, price: 1000 },
         goal: { title: "Shure SM7B mikrofoni", current: 3_450_000, target: 5_000_000 },
+        products: [
+            { id: "soka-sub", title: "«Gullar ichidagi qiz» — o'zbekcha subtitrlar to'plami", kind: "digital", price: 25000, image: img("mascot"), desc: "12 qism uchun .ass subtitrlar, shriftlar bilan." },
+            { id: "soka-shirt", title: "Kawaii Dub futbolkasi", kind: "physical", price: 140000, image: img("pathway"), desc: "Paxta, oq va qora rangda. Toshkent bo'ylab yetkazib berish." },
+        ],
     },
     {
         id: "madina",
@@ -136,6 +181,11 @@ export const CREATORS: Creator[] = [
             [1100, 740, 80],
             100,
         ),
+        trial: { days: 7, price: 1000 },
+        products: [
+            { id: "madina-pack", title: "4K devor qog'ozlari — 20 ta", kind: "digital", price: 30000, image: img("Hatsune Miku - Magical cure"), desc: "Telefon va kompyuter uchun, PNG." },
+            { id: "madina-print", title: "A3 imzoli print", kind: "physical", price: 90000, image: img("Hatsuna Miku - Rolling Girl"), desc: "Qalin qog'ozda, imzo bilan." },
+        ],
     },
     {
         id: "zenith",
@@ -158,7 +208,7 @@ export const CREATORS: Creator[] = [
             ],
             [610, 300, 70],
         ),
-        live: { title: "Piano efir: openinglar so'rov bo'yicha", viewers: 61, startedMin: 12, tier: "sempai", cover: img("Sekai no owari - Stella") },
+        live: { title: "Piano efir: openinglar so'rov bo'yicha", viewers: 61, startedMin: 12, access: "members", tier: "sempai", record: true, recordAccess: "same", chat: "members", donations: true, danmaku: false, cover: img("Sekai no owari - Stella") },
     },
     {
         id: "yuki",
@@ -183,7 +233,9 @@ export const CREATORS: Creator[] = [
             [1800, 690, 140],
             150,
         ),
-        live: { title: "Frieren kostyumi: plashni tikamiz", viewers: 87, startedMin: 64, tier: null, cover: img("ado-elf") },
+        products: [{ id: "yuki-pattern", title: "Elf malikasi kostyumi naqshlari", kind: "digital", price: 45000, image: img("ado-elf"), desc: "PDF naqshlar va mato ro'yxati." }],
+        live: { title: "Frieren kostyumi: plashni tikamiz", viewers: 87, startedMin: 64, access: "ticket", tier: "sensei", price: 15000, record: false, chat: "all", donations: true, danmaku: true, cover: img("ado-elf") },
+        trial: { days: 7, price: 2000 },
     },
     {
         id: "bekzod",
@@ -207,6 +259,7 @@ export const CREATORS: Creator[] = [
             [900, 380, 60],
             60,
         ),
+        products: [{ id: "bekzod-vol1", title: "«Shamol yo'li» 1-tom (bosma)", kind: "physical", price: 120000, image: img("Ado - Kaze no Yukue"), desc: "1–8 boblar, 180 sahifa, imzo bilan." }],
     },
     {
         id: "otakucast",
@@ -229,7 +282,7 @@ export const CREATORS: Creator[] = [
             ],
             [520, 200, 40],
         ),
-        live: { title: "Kuz mavsumi: top-10 anime", viewers: 214, startedMin: 21, tier: null, cover: img("Sakanaction - Kaiju") },
+        live: { title: "Kuz mavsumi: top-10 anime", viewers: 214, startedMin: 21, access: "free", tier: null, record: true, recordAccess: "public", chat: "slow", donations: true, danmaku: true, cover: img("Sakanaction - Kaiju") },
     },
     {
         id: "nori",
@@ -278,7 +331,7 @@ export const CREATORS: Creator[] = [
     },
 ];
 
-export const creatorById = (id: string) => CREATORS.find((c) => c.id === id);
+export const creatorById = (id: string): Creator | undefined => CREATORS.find((c) => c.id === id);
 export const tierOf = (c: Creator, id: string | null) => (id ? c.tiers.find((t) => t.id === id) : undefined);
 
 export const POSTS: Post[] = [
@@ -286,7 +339,7 @@ export const POSTS: Post[] = [
         id: "p1", creatorId: "soka", kind: "video", tier: "sempai", agoMin: 95, likes: 412, comments: 58, duration: "23:41",
         title: "Gullar ichidagi qiz — 6-qism (a'zolar uchun oldindan)",
         text: "Yangi qism tayyor! Klub a'zolari 3 kun oldin ko'radi. Bu qismda Haruning ovozini yangi aktyorimiz Dilnoza yozdi.",
-        media: img("mascot"), tags: ["dublyaj", "gullar"],
+        media: img("mascot"), tags: ["dublyaj", "gullar"], publicAfterMin: 4320,
     },
     {
         id: "p2", creatorId: "madina", kind: "image", tier: null, agoMin: 180, likes: 1840, comments: 132,
@@ -311,6 +364,7 @@ export const POSTS: Post[] = [
         title: "Elf malikasi — to'liq fotosessiya (32 kadr)",
         text: "Kostyumga 3 hafta ketdi. Atelye a'zolari uchun naqsh va mato ro'yxati ham shu yerda.",
         media: img("ado-elf"), tags: ["cosplay"],
+        gallery: [img("ado-elf"), img("Hatsune Miku - Magical cure"), img("Hatsuna Miku - Rolling Girl")],
     },
     {
         id: "p6", creatorId: "otakucast", kind: "event", tier: null, agoMin: 720, likes: 140, comments: 22,
@@ -326,7 +380,7 @@ export const POSTS: Post[] = [
     },
     {
         id: "p8", creatorId: "madina", kind: "video", tier: "sempai", agoMin: 1300, likes: 610, comments: 37, duration: "41:08",
-        title: "Chizish darsi: anime ko'zlari va yorug'lik",
+        title: "Chizish darsi: anime ko'zlari va yorug'lik", price: 15000,
         text: "Bosqichma-bosqich: eskizdan tayyor rangga. PSD fayl biriktirilgan.",
         media: img("Hatsuna Miku - Rolling Girl"),
     },
@@ -354,7 +408,8 @@ export const POSTS: Post[] = [
     },
     {
         id: "p13", creatorId: "soka", kind: "image", tier: "sensei", agoMin: 3100, likes: 140, comments: 26,
-        title: "Ovoz yozish sahnasi: kulisdan 40 ta kadr",
+        title: "Ovoz yozish sahnasi: kulisdan 40 ta kadr", price: 20000,
+        gallery: [img("pathway"), img("mascot"), img("Ado - Kaze no Yukue"), img("Sekai no owari - Stella")],
         text: "Studiyadagi bir kun: kim qanday yozadi, qayerda kulamiz va qayerda qayta yozamiz.",
         media: img("pathway"),
     },
@@ -366,7 +421,98 @@ export const POSTS: Post[] = [
     },
 ];
 
+// Efir yozuvlari
+POSTS.push(
+    {
+        id: "v1", creatorId: "soka", kind: "video", tier: null, agoMin: 4300, likes: 520, comments: 64, duration: "1:42:10", vod: true,
+        title: "Efir yozuvi: 5-qism dublyaji jonli",
+        text: "O'tgan haftadagi efirning to'liq yozuvi. Kulgili qayta yozishlar 47:00 dan.",
+        media: img("mascot"),
+    },
+    {
+        id: "v2", creatorId: "zenith", kind: "video", tier: "sempai", agoMin: 5200, likes: 140, comments: 12, duration: "58:30", vod: true,
+        title: "Efir yozuvi: piano so'rovlar",
+        text: "Musiqachi a'zolari uchun yozuv. Notalar izohda.",
+        media: img("Sekai no owari - Stella"),
+    },
+    {
+        id: "v3", creatorId: "otakucast", kind: "video", tier: null, agoMin: 9000, likes: 330, comments: 41, duration: "2:05:00", vod: true,
+        title: "Efir yozuvi: yoz mavsumi yakunlari",
+        text: "Yoz mavsumining eng yaxshi va eng yomon animelari.",
+        media: img("Sakanaction - Kaiju"),
+    },
+);
+
 export const postsOf = (creatorId: string) => POSTS.filter((p) => p.creatorId === creatorId);
+
+/** Erta kirish ochilishigacha qolgan daqiqa (0 — ochiq yoki erta kirish yo'q) */
+export const earlyLeftMin = (p: Post) => (p.publicAfterMin ? Math.max(0, p.publicAfterMin - postAgoMin(p)) : 0);
+
+/** Post qachon chiqqan (daqiqa) — studiya postlari uchun haqiqiy vaqtdan */
+export const postAgoMin = (p: Post) => (p.at ? Math.max(0, Math.round((Date.now() - p.at) / 60000)) : p.agoMin);
+
+export function leftLabel(min: number) {
+    if (min < 60) return `${min} daqiqadan keyin`;
+    const h = Math.round(min / 60);
+    if (h < 48) return `${h} soatdan keyin`;
+    return `${Math.round(h / 24)} kundan keyin`;
+}
+
+export interface Comment {
+    id: string;
+    postId: string;
+    name: string;
+    avatar: string;
+    text: string;
+    agoMin: number;
+    at?: number;
+    likes: number;
+    /** Javob bo'lsa — asosiy izoh */
+    parentId?: string;
+    tier?: string;
+    creator?: boolean;
+    me?: boolean;
+}
+
+const FANS = [
+    { name: "AnimeNinja", avatar: face("photo-1527980965255-d3b416303d12") },
+    { name: "ToshkentOtaku", avatar: face("photo-1500648767791-00dcc994a43e") },
+    { name: "sakura_tsh", avatar: face("photo-1438761681033-6461ffad8d80") },
+    { name: "Dilnoza", avatar: face("photo-1534528741775-53994a69daeb") },
+    { name: "nekochan", avatar: face("photo-1524504388940-b1c1722653e1") },
+];
+const LINES = [
+    "Zo'r chiqibdi, rahmat! 🔥",
+    "Keyingisini kutyapman",
+    "Shu klubga qo'shilganimga afsuslanmayman",
+    "Qanday dasturda qilasiz?",
+    "8:30 dagi joy eng zo'ri",
+    "Sifat har safar yaxshilanyapti",
+];
+
+/** Post uchun namunaviy izohlar (har safar bir xil) */
+export function seedComments(p: Post): Comment[] {
+    const c = creatorById(p.creatorId)!;
+    const n = Math.min(4, 2 + (p.likes % 3));
+    const list: Comment[] = [];
+    for (let i = 0; i < n; i++) {
+        const fan = FANS[(p.likes + i * 3) % FANS.length];
+        list.push({
+            id: `${p.id}-c${i}`,
+            postId: p.id,
+            name: fan.name,
+            avatar: fan.avatar,
+            text: LINES[(p.comments + i) % LINES.length],
+            agoMin: Math.max(1, Math.round(p.agoMin / (i + 2))),
+            likes: (p.likes * (i + 1)) % 37,
+            tier: i % 2 === 0 ? c.tiers[(i + p.likes) % c.tiers.length].name : undefined,
+        });
+        if (i === 0) {
+            list.push({ id: `${p.id}-r0`, postId: p.id, parentId: `${p.id}-c0`, name: c.name, avatar: c.avatar, text: "Rahmat! Keyingisi tez orada 💜", agoMin: Math.max(1, Math.round(p.agoMin / 3)), likes: 12, creator: true });
+        }
+    }
+    return list;
+}
 
 /** "35 000" */
 export const money = (n: number) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, " ");

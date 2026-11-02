@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, Eye, Lock } from "lucide-react";
+import { ArrowRight, BadgeCheck, Eye, Lock, Ticket } from "lucide-react";
 import { categoryLabel, compact, money, type Creator } from "@/lib/club";
 
 export const panel = "bg-card-bg dark:bg-[#0a0a0a] rounded-2xl border border-border-sep dark:border-white/[0.06] card-shadow theme-transition";
@@ -70,11 +70,19 @@ export function LiveTile({ c }: { c: Creator }) {
                 <span className="absolute top-3 right-3 inline-flex items-center gap-1 px-2 py-1 rounded-md bg-black/55 text-white text-[11px] font-mono">
                     <Eye className="w-3.5 h-3.5" /> {live.viewers}
                 </span>
-                {tier && (
-                    <span className="absolute bottom-3 right-3 inline-flex items-center gap-1 px-2 py-1 rounded-md bg-black/55 backdrop-blur text-white text-[10px] font-mono font-bold uppercase">
-                        <Lock className="w-3 h-3" /> {tier.name}+
-                    </span>
-                )}
+                <span className="absolute bottom-3 right-3 inline-flex items-center gap-1 px-2 py-1 rounded-md bg-black/55 backdrop-blur text-white text-[10px] font-mono font-bold uppercase">
+                    {live.access === "free" ? (
+                        "Bepul"
+                    ) : live.access === "ticket" ? (
+                        <>
+                            <Ticket className="w-3 h-3" /> {money(live.price ?? 0)}
+                        </>
+                    ) : (
+                        <>
+                            <Lock className="w-3 h-3" /> {tier ? `${tier.name}+` : "A'zolar"}
+                        </>
+                    )}
+                </span>
             </div>
             <div className="flex items-start gap-3 mt-3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}

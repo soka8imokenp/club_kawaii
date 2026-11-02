@@ -1,7 +1,8 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { CREATORS, creatorById, type Creator, type Post } from "./club";
+import { CREATORS } from "./club";
+import { findCreator } from "./studio";
 
 /** Foydalanuvchining klub a'zoliklari (hozircha brauzerda; keyin — akkaunt va to'lov serveri). */
 export interface Membership {
@@ -13,6 +14,8 @@ export interface Membership {
     since: number;
     /** To'langan muddat (oy) */
     months: number;
+    /** Sinov muddati tugash vaqti (ms) */
+    trialUntil?: number;
 }
 
 const KEY = "club.memberships";
@@ -57,14 +60,15 @@ export function useMembership(creatorId: string) {
     return useMemberships().find((m) => m.creatorId === creatorId);
 }
 
-export function join(creatorId: string, tierId: string, months: number): Membership {
+export function join(creatorId: string, tierId: string, months: number, trialDays?: number): Membership {
     const list = read();
     const prev = list.find((m) => m.creatorId === creatorId);
-    const c = creatorById(creatorId)!;
+    const c = findCreator(creatorId)!;
     const tier = c.tiers.find((t) => t.id === tierId)!;
+    const trialUntil = trialDays ? Date.now() + trialDays * DAY : undefined;
     const m: Membership = prev
-        ? { ...prev, tierId, months }
-        : { creatorId, tierId, months, since: Date.now(), number: c.tiers.reduce((s, t) => s + t.members, 0) + 1 + (tier.members % 7) };
+        ? { ...prev, tierId, months, trialUntil }
+        : { creatorId, tierId, months, trialUntil, since: Date.now(), number: c.tiers.reduce((s, t) => s + t.members, 0) + 1 + (tier.members % 7) };
     write([...list.filter((x) => x.creatorId !== creatorId), m]);
     // Birinchi a'zolikdan keyin lenta "Obunalarim"dan ochiladi
     if (list.length === 0) setFeedTab("mine");
@@ -73,23 +77,6 @@ export function join(creatorId: string, tierId: string, months: number): Members
 
 export function leave(creatorId: string) {
     write(read().filter((m) => m.creatorId !== creatorId));
-}
-
-const rank = (c: Creator, tierId: string) => c.tiers.findIndex((t) => t.id === tierId);
-
-/** Post ochiqmi: ochiq post yoki a'zolik tarifi kerakli tarifdan past emas */
-export function canSee(post: Post, list: Membership[]) {
-    if (!post.tier) return true;
-    const m = list.find((x) => x.creatorId === post.creatorId);
-    if (!m) return false;
-    const c = creatorById(post.creatorId)!;
-    return rank(c, m.tierId) >= rank(c, post.tier);
-}
-
-/** Efir/yopiq kontent uchun: a'zolik shu tarifga yetadimi */
-export function hasTier(c: Creator, tierId: string | null, m?: Membership) {
-    if (!tierId) return true;
-    return !!m && rank(c, m.tierId) >= rank(c, tierId);
 }
 
 export const nextCharge = (m: Membership) => {
@@ -109,6 +96,20 @@ export const formatDate = (d: Date | number) => {
 export const memberNo = (n: number) => `# ${String(n).padStart(4, "0")}`;
 
 export const myCreators = (list: Membership[]) => list.map((m) => CREATORS.find((c) => c.id === m.creatorId)!).filter(Boolean);
+
+/** A'zolik staji (oy) va karta darajasi: 3 oy — bronza, 6 oy — gologramma, 12 oy — oltin */
+export const TENURE = [
+    { months: 3, id: "bronze", label: "Bronza" },
+    { months: 6, id: "holo", label: "Gologramma" },
+    { months: 12, id: "gold", label: "Oltin" },
+] as const;
+
+export function tenureOf(m: Membership) {
+    const months = Math.max(0, Math.floor((Date.now() - m.since) / (30 * DAY)));
+    const level = [...TENURE].reverse().find((t) => months >= t.months);
+    const next = TENURE.find((t) => months < t.months);
+    return { months, level, next };
+}
 
 /* ---- Lentadagi tanlangan bo'lim (eslab qolinadi) ---- */
 export type FeedTab = "all" | "mine";

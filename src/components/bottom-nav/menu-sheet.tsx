@@ -6,8 +6,12 @@ import { Bell, ChevronDown, ChevronRight, CircleHelp, Compass, Globe, LayoutDash
 import { useThemeHook } from "@/components/top-bar/_hooks/top-bar-hooks";
 import { SideDrawer } from "@/components/ui/SideDrawer";
 import { SITES } from "@/lib/sites";
+import { useRouter } from "next/navigation";
+import { useAccount } from "@/lib/account";
+import { openNotices } from "@/components/club/NotificationsSheet";
+import { openLogin } from "@/components/club/sheets";
 
-type Item = { label: string; Icon: typeof Radio; href?: string; current?: boolean };
+type Item = { label: string; Icon: typeof Radio; href?: string; current?: boolean; onClick?: () => void };
 
 const SECTIONS: { id: string; title: string; items: Item[] }[] = [
     {
@@ -24,16 +28,16 @@ const SECTIONS: { id: string; title: string; items: Item[] }[] = [
         id: "creator",
         title: "Ijodkorlar uchun",
         items: [
-            { label: "Ijodkor bo'lish", Icon: Sparkles },
-            { label: "Studiya", Icon: LayoutDashboard },
+            { label: "Ijodkor bo'lish", Icon: Sparkles, href: "/studio" },
+            { label: "Studiya", Icon: LayoutDashboard, href: "/studio" },
         ],
     },
     {
         id: "more",
         title: "Boshqalar",
         items: [
-            { label: "Profil", Icon: User },
-            { label: "Bildirishnomalar", Icon: Bell },
+            { label: "Profil", Icon: User, href: "/me" },
+            { label: "Bildirishnomalar", Icon: Bell, onClick: openNotices },
             { label: "Yordam", Icon: CircleHelp },
         ],
     },
@@ -55,7 +59,7 @@ function Section({ title, items, open, onToggle, onNavigate }: { title: string; 
             <div className={`grid transition-[grid-template-rows] duration-300 ease-out ${open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
                 <div className="overflow-hidden">
                     <div className="pb-1">
-                        {items.map(({ label, Icon, href, current }) => {
+                        {items.map(({ label, Icon, href, current, onClick }) => {
                             const cls = `flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] transition-colors ${
                                 current ? "text-primary" : "text-text-muted hover:text-text-main hover:bg-foreground/[0.04]"
                             }`;
@@ -70,7 +74,15 @@ function Section({ title, items, open, onToggle, onNavigate }: { title: string; 
                                     {body}
                                 </Link>
                             ) : (
-                                <button key={label} type="button" className={`w-full text-left cursor-pointer ${cls}`}>
+                                <button
+                                    key={label}
+                                    type="button"
+                                    onClick={() => {
+                                        onNavigate();
+                                        onClick?.();
+                                    }}
+                                    className={`w-full text-left cursor-pointer ${cls}`}
+                                >
                                     {body}
                                 </button>
                             );
@@ -87,6 +99,8 @@ export function MenuSheet({ open, onClose }: { open: boolean; onClose: () => voi
     const { theme, toggleTheme } = useThemeHook();
     const dark = theme === "dark";
     const [expanded, setExpanded] = useState<string | null>("club");
+    const router = useRouter();
+    const account = useAccount();
 
     return (
         <SideDrawer
@@ -99,10 +113,18 @@ export function MenuSheet({ open, onClose }: { open: boolean; onClose: () => voi
                     <button type="button" onClick={toggleTheme} aria-label={dark ? "Yorug' rejim" : "Qorong'i rejim"} className="w-9 h-9 rounded-lg flex items-center justify-center text-text-muted hover:text-text-main cursor-pointer shrink-0">
                         {dark ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
                     </button>
-                    <label className="flex-1 min-w-0 flex items-center gap-2 h-9 px-2.5 rounded-lg bg-foreground/[0.04] text-text-muted">
+                    <form
+                        className="flex-1 min-w-0 flex items-center gap-2 h-9 px-2.5 rounded-lg bg-foreground/[0.04] text-text-muted"
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            const q = new FormData(e.currentTarget).get("q")?.toString().trim();
+                            router.push(q ? `/search?q=${encodeURIComponent(q)}` : "/search");
+                            close();
+                        }}
+                    >
                         <Search className="w-4 h-4 shrink-0" />
-                        <input placeholder="Qidiruv" aria-label="Qidiruv" className="w-full min-w-0 bg-transparent text-sm text-text-main placeholder:text-text-muted focus:outline-none" />
-                    </label>
+                        <input name="q" placeholder="Qidiruv" aria-label="Qidiruv" enterKeyHint="search" className="w-full min-w-0 bg-transparent text-sm text-text-main placeholder:text-text-muted focus:outline-none" />
+                    </form>
                     <button type="button" onClick={close} aria-label="Yopish" className="w-9 h-9 rounded-lg flex items-center justify-center text-text-muted hover:text-text-main cursor-pointer shrink-0">
                         <X className="w-4 h-4" />
                     </button>
@@ -111,10 +133,28 @@ export function MenuSheet({ open, onClose }: { open: boolean; onClose: () => voi
             footer={<p className="py-4 text-center text-[10px] font-mono text-text-muted/70">versiya: 1.0.0</p>}
         >
             <div className="px-3 space-y-2">
-                <button type="button" className="w-full flex items-center justify-between px-4 py-3 mb-2 rounded-xl bg-primary hover:bg-primary/90 text-white text-sm font-bold cursor-pointer transition-colors active:scale-[0.98]">
-                    Kirish / Ro&apos;yxatdan o&apos;tish
-                    <LogIn className="w-4 h-4" />
-                </button>
+                {account ? (
+                    <Link href="/me" onClick={onClose} className="w-full flex items-center gap-3 px-3 py-2.5 mb-2 rounded-xl bg-foreground/[0.04]">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={account.avatar} alt="" className="w-9 h-9 rounded-lg bg-primary/15 p-1.5 object-contain" />
+                        <span className="min-w-0">
+                            <span className="block text-sm font-bold text-text-main truncate">{account.name}</span>
+                            <span className="block text-[11px] font-mono text-text-muted">Profil</span>
+                        </span>
+                    </Link>
+                ) : (
+                    <button
+                        type="button"
+                        onClick={() => {
+                            onClose();
+                            openLogin();
+                        }}
+                        className="w-full flex items-center justify-between px-4 py-3 mb-2 rounded-xl bg-primary hover:bg-primary/90 text-white text-sm font-bold cursor-pointer transition-colors active:scale-[0.98]"
+                    >
+                        Telegram orqali kirish
+                        <LogIn className="w-4 h-4" />
+                    </button>
+                )}
                 {SECTIONS.map((s) => (
                     <Section
                         key={s.id}

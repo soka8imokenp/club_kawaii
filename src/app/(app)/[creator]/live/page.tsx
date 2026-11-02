@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { CREATORS, creatorById } from "@/lib/club";
 import { StreamView } from "@/components/club/stream/StreamView";
 
@@ -9,11 +8,9 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ creator: string }> }): Promise<Metadata> {
     const c = creatorById((await params).creator);
-    return c?.live ? { title: `${c.live.title} • ${c.name}`, description: c.tagline } : {};
+    return c?.live ? { title: `${c.live.title} • ${c.name}`, description: c.tagline } : { title: "Efir • Kawaii Club" };
 }
 
 export default async function StreamPage({ params }: { params: Promise<{ creator: string }> }) {
-    const c = creatorById((await params).creator);
-    if (!c?.live) notFound();
-    return <StreamView id={c.id} />;
+    return <StreamView id={(await params).creator} />;
 }
