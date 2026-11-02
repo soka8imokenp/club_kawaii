@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bell, CreditCard, FileText, MessageCircle, Radio, Sparkles } from "lucide-react";
+import { Bell, CreditCard, FileText, MessageCircle, Radio } from "lucide-react";
 import { BottomSheet } from "@/components/ui/BottomSheet";
 import { markAllRead, timeAgo, useNotices, type Notice } from "@/lib/account";
 import { createOpener } from "@/lib/store";
@@ -9,7 +9,7 @@ import { createOpener } from "@/lib/store";
 const opener = createOpener<null>();
 export const openNotices = () => opener.open(null);
 
-const ICON: Record<Notice["kind"], typeof Bell> = { post: FileText, live: Radio, payment: CreditCard, comment: MessageCircle, system: Sparkles };
+const ICON: Record<Notice["kind"], typeof Bell> = { post: FileText, live: Radio, payment: CreditCard, comment: MessageCircle, system: Bell };
 
 export function useUnread() {
     return useNotices().filter((n) => !n.read).length;

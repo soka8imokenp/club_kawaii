@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Award, Check, Coins, Download, Gift, LayoutDashboard, LogOut, MessageCircle, Package, PenLine, Radio, Sparkles, Ticket, WalletCards } from "lucide-react";
+import { Award, Check, Coins, Download, Gift, LayoutDashboard, LogOut, MessageCircle, Package, PenLine, Layers, Radio, Ticket, WalletCards } from "lucide-react";
 import { CREATORS, money } from "@/lib/club";
 import { logout, updateAccount, useAccount, useActivity, usePayments, usePurchases, type PaymentKind } from "@/lib/account";
 import { useMemberships, tenureOf } from "@/lib/membership";
@@ -43,7 +43,7 @@ export default function ProfilePage() {
     const maxTenure = Math.max(0, ...memberships.map((m) => tenureOf(m).months));
     const badges = [
         { id: "first", label: "Birinchi karta", desc: "Klubga qo'shiling", done: memberships.length > 0, Icon: WalletCards },
-        { id: "collector", label: "Kolleksioner", desc: "3 ta klub kartasi", done: memberships.length >= 3, Icon: Sparkles },
+        { id: "collector", label: "Kolleksioner", desc: "3 ta klub kartasi", done: memberships.length >= 3, Icon: Layers },
         { id: "loyal", label: "Sodiq a'zo", desc: "3 oy bir klubda", done: maxTenure >= 3, Icon: Award },
         { id: "talker", label: "Suhbatdosh", desc: "5 ta izoh", done: activity.comments >= 5, Icon: MessageCircle },
         { id: "patron", label: "Homiy", desc: "Birinchi donat", done: activity.donations > 0, Icon: Coins },

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Palette } from "lucide-react";
 import { CATEGORIES, CREATORS } from "@/lib/club";
 import { ClubHero } from "@/components/club/ClubHero";
 import { CreatorTile, LiveTile, SectionHead, panel } from "@/components/club/Tiles";
@@ -64,7 +64,7 @@ export default function HomePage() {
             {/* Ijodkorlar uchun */}
             <section className={`${panel} p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center gap-5`}>
                 <span className="w-12 h-12 rounded-2xl bg-primary/12 text-primary flex items-center justify-center shrink-0">
-                    <Sparkles className="w-6 h-6" />
+                    <Palette className="w-6 h-6" />
                 </span>
                 <div className="flex-1">
                     <h2 className="text-lg font-black text-text-main">Ijodkormisiz? O&apos;z klubingizni oching</h2>

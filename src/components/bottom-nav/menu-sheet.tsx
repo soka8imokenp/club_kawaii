@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Bell, ChevronDown, ChevronRight, CircleHelp, Compass, Globe, LayoutDashboard, LogIn, Moon, Newspaper, Radio, Search, Sparkles, Sun, User, WalletCards, X } from "lucide-react";
+import { Bell, ChevronDown, ChevronRight, CircleHelp, Compass, Globe, LayoutDashboard, LogIn, Moon, Newspaper, Radio, Palette, Search, Sun, User, WalletCards, X } from "lucide-react";
 import { useThemeHook } from "@/components/top-bar/_hooks/top-bar-hooks";
 import { SideDrawer } from "@/components/ui/SideDrawer";
 import { SITES } from "@/lib/sites";
@@ -28,7 +28,7 @@ const SECTIONS: { id: string; title: string; items: Item[] }[] = [
         id: "creator",
         title: "Ijodkorlar uchun",
         items: [
-            { label: "Ijodkor bo'lish", Icon: Sparkles, href: "/studio" },
+            { label: "Ijodkor bo'lish", Icon: Palette, href: "/studio" },
             { label: "Studiya", Icon: LayoutDashboard, href: "/studio" },
         ],
     },

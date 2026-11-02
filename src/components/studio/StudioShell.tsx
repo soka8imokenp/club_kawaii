@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowRight, BarChart3, ExternalLink, FileText, Layers, Radio, Settings, Sparkles, Wallet } from "lucide-react";
+import { ArrowRight, BarChart3, ExternalLink, FileText, Layers, Radio, Settings, Wallet } from "lucide-react";
 import { CATEGORIES, type CategoryId } from "@/lib/club";
 import { useAccount } from "@/lib/account";
 import { createClub, useMyClub, useMyLive } from "@/lib/studio";
@@ -102,8 +102,8 @@ function Onboarding() {
 
     return (
         <div className="pb-10 max-w-5xl mx-auto w-full">
-            <p className="flex items-center gap-2 text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-primary">
-                <Sparkles className="w-4 h-4" /> Ijodkor bo&apos;lish
+            <p className="text-[11px] font-mono font-bold uppercase tracking-[0.2em] text-primary">
+                Ijodkor bo&apos;lish
             </p>
             <h1 className="mt-2 text-2xl sm:text-4xl font-black text-text-main">O&apos;z klubingizni oching</h1>
             <p className="mt-2 text-sm text-text-muted max-w-xl">Bir daqiqa: nom, manzil va klub kartangiz rangi. Tariflar, postlar va efirlarni keyin studiyada sozlaysiz.</p>
